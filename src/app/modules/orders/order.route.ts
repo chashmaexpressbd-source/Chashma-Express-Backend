@@ -23,8 +23,8 @@ router.post(
 
 router.post(
   '/checkout',
-  auth(Role.CUSTOMER, Role.ADMIN),
-  OrderController.checkout,
+
+  OrderController.checkoutCart,
 );
 
 // get all orders( admin only)

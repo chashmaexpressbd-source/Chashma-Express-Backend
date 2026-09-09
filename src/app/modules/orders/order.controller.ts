@@ -51,14 +51,13 @@ const buyNow = catchAsync(async (req: Request, res: Response) => {
 /**
  * CART CHECKOUT CONTROLLER
  */
-const checkout = catchAsync(async (req: Request, res: Response) => {
-  const user = req.user!;
 
-  const { name, phone, district, thana, address, note, isInsideDhaka } =
+const checkoutCart = catchAsync(async (req: Request, res: Response) => {
+  const { name, phone, district, thana, address, note, isInsideDhaka, items } =
     req.body;
 
   const result = await OrderService.checkoutCart(
-    user.id,
+    req.user?.id as string, //  if user if login ID is available, not id undefined
     name,
     phone,
     district,
@@ -66,12 +65,13 @@ const checkout = catchAsync(async (req: Request, res: Response) => {
     address,
     note,
     isInsideDhaka,
+    items,
   );
 
   sendResponse(res, {
-    httpStatusCode: 201,
+    httpStatusCode: 200,
     success: true,
-    message: 'Order placed successfully from cart',
+    message: 'Orders created successfully',
     data: result,
   });
 });
@@ -297,7 +297,7 @@ export const deleteOrderController = async (req: Request, res: Response) => {
 
 export const OrderController = {
   buyNow,
-  checkout,
+  checkoutCart,
   getOrders,
   getAllOrders,
   getSingleOrder,

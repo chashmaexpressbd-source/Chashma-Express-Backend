@@ -1276,18 +1276,14 @@ var createBuyNowOrder = async (userId, productId, quantity, name, phone, distric
     throw new Error("Failed to create buy now order");
   }
 };
-var checkoutCart = async (userId, name, phone, district, thana, address, note, isInsideDhaka) => {
+var checkoutCart = async (userId, name, phone, district, thana, address, note, isInsideDhaka, items) => {
   try {
-    const cartItems = await prisma.cart.findMany({
-      where: { userId },
-      include: { product: true }
-    });
-    if (cartItems.length === 0) {
-      throw new Error("Cart is empty");
+    if (!items || items.length === 0) {
+      throw new Error("No products selected");
     }
     const shippingFee = isInsideDhaka ? 90 : 130;
-    const subtotal = cartItems.reduce((sum, item) => {
-      return sum + item.product.price * item.quantity;
+    const subtotal = items.reduce((sum, item) => {
+      return sum + item.price * item.quantity;
     }, 0);
     const total = subtotal + shippingFee;
     const order = await prisma.order.create({
@@ -1303,10 +1299,10 @@ var checkoutCart = async (userId, name, phone, district, thana, address, note, i
         shippingFee,
         total,
         items: {
-          create: cartItems.map((item) => ({
-            productId: item.product.id,
-            name: item.product.name,
-            price: item.product.price,
+          create: items.map((item) => ({
+            productId: item.productId,
+            name: item.name,
+            price: item.price,
             quantity: item.quantity
           }))
         }
@@ -1314,9 +1310,6 @@ var checkoutCart = async (userId, name, phone, district, thana, address, note, i
       include: {
         items: true
       }
-    });
-    await prisma.cart.deleteMany({
-      where: { userId }
     });
     return order;
   } catch (error) {
@@ -1803,23 +1796,24 @@ var buyNow = catchAsync(async (req, res) => {
     data: result
   });
 });
-var checkout = catchAsync(async (req, res) => {
-  const user = req.user;
-  const { name, phone, district, thana, address, note, isInsideDhaka } = req.body;
+var checkoutCart2 = catchAsync(async (req, res) => {
+  const { name, phone, district, thana, address, note, isInsideDhaka, items } = req.body;
   const result = await OrderService.checkoutCart(
-    user.id,
+    req.user?.id,
+    //  if user if login ID is available, not id undefined
     name,
     phone,
     district,
     thana,
     address,
     note,
-    isInsideDhaka
+    isInsideDhaka,
+    items
   );
   sendResponse(res, {
-    httpStatusCode: 201,
+    httpStatusCode: 200,
     success: true,
-    message: "Order placed successfully from cart",
+    message: "Orders created successfully",
     data: result
   });
 });
@@ -1986,7 +1980,7 @@ var deleteOrderController = async (req, res) => {
 };
 var OrderController = {
   buyNow,
-  checkout,
+  checkoutCart: checkoutCart2,
   getOrders,
   getAllOrders: getAllOrders2,
   getSingleOrder: getSingleOrder2,
@@ -2003,8 +1997,7 @@ router3.post(
 );
 router3.post(
   "/checkout",
-  auth(Role.CUSTOMER, Role.ADMIN),
-  OrderController.checkout
+  OrderController.checkoutCart
 );
 router3.get("/all", accessRole3, OrderController.getAllOrders);
 router3.get("/customer-history", OrderController.getCustomerOrderHistoryByPhone);
