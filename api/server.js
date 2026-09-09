@@ -3210,10 +3210,25 @@ var chat = async ({ messages, leadData }) => {
   const searchIntent = extractSearchIntent(lastMessage.content);
   let products = [];
   if (searchIntent) {
+    console.log("SEARCH INTENT:", JSON.stringify(searchIntent, null, 2));
     products = await searchProducts(searchIntent);
+    console.log("PRODUCT COUNT:", products.length);
+    console.log(
+      "PRODUCTS:",
+      products.map((product) => ({
+        id: product.id,
+        name: product.name,
+        brand: product.brand,
+        category: product.category?.name,
+        stock: product.stock,
+        isPublished: product.isPublished
+      }))
+    );
   }
   if (searchIntent && products.length === 0) {
+    console.log("NO SEARCH RESULT \u2192 FALLBACK");
     products = await getAvailableProducts();
+    console.log("FALLBACK PRODUCT COUNT:", products.length);
   }
   const productContext = formatProductsForAI(products);
   const history = messages.slice(0, -1).map((message) => ({

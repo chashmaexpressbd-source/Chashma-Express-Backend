@@ -851,13 +851,28 @@ const chat = async ({ messages, leadData }: IChatRequest) => {
   let products: any[] = [];
 
   if (searchIntent) {
+    console.log('SEARCH INTENT:', JSON.stringify(searchIntent, null, 2));
     products = await searchProducts(searchIntent);
+    console.log('PRODUCT COUNT:', products.length);
+    console.log(
+      'PRODUCTS:',
+      products.map(product => ({
+        id: product.id,
+        name: product.name,
+        brand: product.brand,
+        category: product.category?.name,
+        stock: product.stock,
+        isPublished: product.isPublished,
+      })),
+    );
   }
 
   // 4. Fallback Products
 
   if (searchIntent && products.length === 0) {
+    console.log('NO SEARCH RESULT → FALLBACK');
     products = await getAvailableProducts();
+    console.log('FALLBACK PRODUCT COUNT:', products.length);
   }
 
   // 5. Product Context
