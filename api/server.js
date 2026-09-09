@@ -6430,9 +6430,10 @@ var app = express4();
 var corsOptions = {
   origin: [
     "http://localhost:3000",
-    "https://www.seraplace.com",
-    "www.seraplace.com",
-    "https://next-buy-ai-frontend.vercel.app"
+    "https://www.chashmaexpressbd.com",
+    "www.chashmaexpressbd.com",
+    "https://chashma-express-frontend.vercel.app",
+    "www.chashma-express-frontend.vercel.app"
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
