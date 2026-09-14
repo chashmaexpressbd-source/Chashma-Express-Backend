@@ -88,6 +88,8 @@ interface ICheckoutItem {
   name: string;
   price: number;
   quantity: number;
+  size?: string | null;
+  color?: string | null;
 }
 
 const checkoutCart = async (
@@ -135,6 +137,8 @@ const checkoutCart = async (
             name: item.name,
             price: item.price,
             quantity: item.quantity,
+            size: item.size || null,
+            color: item.color || null,
           })),
         },
       },
@@ -151,6 +155,7 @@ const checkoutCart = async (
     throw new Error(error.message);
   }
 };
+
 /**
  * GET USER ORDERS
  */
