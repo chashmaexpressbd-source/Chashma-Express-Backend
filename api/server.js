@@ -908,14 +908,9 @@ var getAllProducts = async (query) => {
       maxPrice,
       sortBy = "createdAt",
       sortOrder = "desc",
-      page = "1",
-      limit = "10",
       isFeatured,
       isPublished
     } = query;
-    const pageNumber = Math.max(Number(page) || 1, 1);
-    const limitNumber = Math.max(Number(limit) || 10, 1);
-    const skip = (pageNumber - 1) * limitNumber;
     const filters = {};
     if (search) {
       filters.OR = [
@@ -975,8 +970,6 @@ var getAllProducts = async (query) => {
     const result = await prisma.product.findMany({
       where: filters,
       orderBy,
-      skip,
-      take: limitNumber,
       include: {
         category: true,
         colorVariants: {
@@ -986,20 +979,8 @@ var getAllProducts = async (query) => {
         }
       }
     });
-    const total = await prisma.product.count({
-      where: filters
-    });
-    const totalPages = Math.ceil(total / limitNumber);
     return {
-      data: result,
-      meta: {
-        total,
-        page: pageNumber,
-        limit: limitNumber,
-        totalPages,
-        hasNextPage: pageNumber < totalPages,
-        hasPreviousPage: pageNumber > 1
-      }
+      data: result
     };
   } catch (error) {
     console.error("GET ALL PRODUCTS ERROR:", error);
