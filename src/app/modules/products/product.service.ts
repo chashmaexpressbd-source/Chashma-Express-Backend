@@ -165,7 +165,7 @@ const getAllProducts = async (query: ProductQuery) => {
       [safeSortBy]: sortOrder === 'asc' ? 'asc' : 'desc',
     };
 
-    // FETCH ALL PRODUCTS
+    // FETCH PRODUCTS
 
     const result = await prisma.product.findMany({
       where: filters,
@@ -183,7 +183,9 @@ const getAllProducts = async (query: ProductQuery) => {
       },
     });
 
-    return result;
+    return {
+      data: result,
+    };
   } catch (error) {
     console.error('GET ALL PRODUCTS ERROR:', error);
 
