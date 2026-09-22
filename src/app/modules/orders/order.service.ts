@@ -34,7 +34,10 @@ const createBuyNowOrder = async (
       throw new Error('Product not found');
     }
 
-    const total = product.price * quantity;
+    // Use special price if available, otherwise regular price
+    const unitPrice = product.specialPrice ?? product.price;
+
+    const subtotal = unitPrice * quantity;
 
     const shippingFee = isInsideDhaka ? 90 : 130;
 
@@ -42,7 +45,7 @@ const createBuyNowOrder = async (
       data: {
         ...(userId ? { userId } : {}),
 
-        total: total + shippingFee,
+        total: subtotal + shippingFee,
 
         name,
         phone,
@@ -422,7 +425,6 @@ const getSingleOrder = async (orderId: string) => {
     throw new Error('Failed to get single order');
   }
 };
-
 
 const VALID_ORDER_STATUSES = [
   'PENDING',
