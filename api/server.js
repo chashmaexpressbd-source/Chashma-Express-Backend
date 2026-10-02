@@ -1220,12 +1220,13 @@ var createBuyNowOrder = async (userId, productId, quantity, name, phone, distric
     if (!product) {
       throw new Error("Product not found");
     }
-    const total = product.price * quantity;
-    const shippingFee = isInsideDhaka ? 90 : 130;
+    const unitPrice = product.specialPrice ?? product.price;
+    const subtotal = unitPrice * quantity;
+    const shippingFee = isInsideDhaka ? 90 : 120;
     const order = await prisma.order.create({
       data: {
         ...userId ? { userId } : {},
-        total: total + shippingFee,
+        total: subtotal + shippingFee,
         name,
         phone,
         district,
@@ -1262,7 +1263,7 @@ var checkoutCart = async (userId, name, phone, district, thana, address, note, i
     if (!items || items.length === 0) {
       throw new Error("No products selected");
     }
-    const shippingFee = isInsideDhaka ? 90 : 130;
+    const shippingFee = isInsideDhaka ? 90 : 120;
     const subtotal = items.reduce((sum, item) => {
       return sum + item.price * item.quantity;
     }, 0);

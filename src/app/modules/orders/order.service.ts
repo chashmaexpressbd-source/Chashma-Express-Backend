@@ -39,7 +39,7 @@ const createBuyNowOrder = async (
 
     const subtotal = unitPrice * quantity;
 
-    const shippingFee = isInsideDhaka ? 90 : 130;
+    const shippingFee = isInsideDhaka ? 90 : 120;
 
     const order = await prisma.order.create({
       data: {
@@ -111,7 +111,7 @@ const checkoutCart = async (
       throw new Error('No products selected');
     }
 
-    const shippingFee = isInsideDhaka ? 90 : 130;
+    const shippingFee = isInsideDhaka ? 90 : 120;
 
     const subtotal = items.reduce((sum, item) => {
       return sum + item.price * item.quantity;
