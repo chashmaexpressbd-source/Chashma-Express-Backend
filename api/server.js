@@ -1222,7 +1222,7 @@ var createBuyNowOrder = async (userId, productId, quantity, name, phone, distric
     }
     const unitPrice = product.specialPrice ?? product.price;
     const subtotal = unitPrice * quantity;
-    const shippingFee = isInsideDhaka ? 90 : 120;
+    const shippingFee = product.isFeatured ? 0 : isInsideDhaka ? 90 : 120;
     const order = await prisma.order.create({
       data: {
         ...userId ? { userId } : {},
